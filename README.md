@@ -1,5 +1,6 @@
 # wrdlr
 A python script to find words in a dictionary with a search pattern.
+It powers the Mac app [wrdlr](https://itunes.apple.com/de/app/wrdlr/id1082481377?mt=12).
 
 Usage:
 
