@@ -15,8 +15,12 @@ def load_dictionary(file):
 	lines = file.readlines()
 	return [line.strip() for line in lines]
 
-def matching_words(words, pattern, min_len = -1, max_len = -1):
-	matches = fnmatch.filter(words, pattern)
+def matching_words(words, pattern, min_len = -1, max_len = -1, match_case = False):
+	if (match_case == True):
+		matches = [word for word in words if fnmatch.fnmatchcase(word, pattern)]
+	else:
+		lower_pattern = pattern.lower()
+		matches = [word for word in words if fnmatch.fnmatch(word.lower(), lower_pattern)]
 
 	if (max_len > -1):
 		matches = [word for word in matches if len(word) <= max_len]
@@ -64,7 +68,7 @@ def test():
 
 def print_help():
 	print "Usage:"
-	print "  wrdlr.py --dict <dictfile> --pattern <pattern> [--minlen <minlen>] [--maxlen <maxlen>]"
+	print "  wrdlr.py --dict <dictfile> --pattern <pattern> [--minlen <minlen>] [--maxlen <maxlen>] [--matchcase]"
 	print
 	print "Example:"
 	print "  ./wrdlr.py --dict /usr/share/dict/words --pattern col* --minlen 5 --maxlen 7"
@@ -82,9 +86,10 @@ def main(argv):
 	pattern = ""
 	minlen = -1
 	maxlen = -1
+	matchcase = False
 
 	try:
-		opts, args = getopt.getopt(argv,"",["dict=","pattern=", "minlen=", "maxlen="])
+		opts, args = getopt.getopt(argv,"",["dict=","pattern=", "minlen=", "maxlen=", "matchcase"])
 	except getopt.GetoptError:
 		print_help()
 		sys.exit(ERROR_WRONG_ARGUMENTS)
@@ -98,6 +103,8 @@ def main(argv):
 			minlen = int(arg)
 		elif opt in ("--maxlen"):
 			maxlen = int(arg)
+		elif opt in ("--matchcase"):
+			matchcase = True
 
 	if len(dictfile) == 0 or len(pattern) == 0:
 		print_help()
@@ -108,7 +115,7 @@ def main(argv):
 		sys.exit(ERROR_DICTIONARY_FILE)
 
 	words = load_dictionary(dictfile)
-	matches = matching_words(words, pattern, minlen, maxlen)
+	matches = matching_words(words, pattern, minlen, maxlen, matchcase)
 	print_words(matches)
 	sys.exit(0)
 
